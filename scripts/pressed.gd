@@ -7,3 +7,6 @@ func handle_input_event(event: InputEvent) -> void:
 func handle_mouse_exited(dragging: bool) -> void:
 	if dragging:
 		state_machine.transition_to("Uncommited")
+
+func commit() -> void:
+	state_machine.transition_to("Commited")

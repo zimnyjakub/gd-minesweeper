@@ -19,6 +19,9 @@ func handle_mouse_entered(dragging: bool) -> void:
 
 func handle_mouse_exited(dragging: bool) -> void:
 	pass
+	
+func commit() -> void:
+	state_machine.transition_to("Commited")
 
 # Virtual function. Corresponds to the `_process()` callback.
 func update(_delta: float) -> void:

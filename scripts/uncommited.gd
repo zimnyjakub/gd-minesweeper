@@ -10,4 +10,3 @@ func handle_input_event(event: InputEvent) -> void:
 func handle_mouse_entered(dragging: bool) -> void:
 	if dragging:
 		state_machine.transition_to("Pressed")
-

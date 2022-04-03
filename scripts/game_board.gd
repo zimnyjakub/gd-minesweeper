@@ -13,6 +13,8 @@ var dragging: bool = false;
 
 var rng = RandomNumberGenerator.new()
 
+var tiles = []
+
 func _ready():
 	var tile = tile_resource.instance()
 	tile_size_x = tile.get_node("Sprite").texture.get_width()  * tile.scale.x
@@ -26,7 +28,6 @@ func generate_new_board() -> void:
 	var mines = generate_mine_locations()
 	print_debug(mines)
 	
-	var tiles = []
 		
 	for x in range(0, size):
 		for y in range(0, size):
@@ -36,23 +37,15 @@ func generate_new_board() -> void:
 			if Vector2(x,y) in mines:
 				tile.has_mine = true
 			tile.coords = Vector2(x,y)
+			tile.connect("transitioned", self, "_on_Tile_transitioned")
+			
 			tiles.append(tile)
 
 	for tile in tiles:
 		if tile.has_mine:
 			print(tile.has_mine)
 			for n in tiles:
-				if n.coords in [
-					Vector2(tile.coords.x-1, tile.coords.y-1), #
-					Vector2(tile.coords.x, tile.coords.y-1),
-					Vector2(tile.coords.x, tile.coords.y+1),
-					Vector2(tile.coords.x+1, tile.coords.y-1),
-					Vector2(tile.coords.x-1, tile.coords.y+1),
-					Vector2(tile.coords.x+1, tile.coords.y+1),
-					Vector2(tile.coords.x-1, tile.coords.y),
-					Vector2(tile.coords.x+1, tile.coords.y),
-				]:
-					print(n.coords)
+				if n.coords in get_neighbouring_vectors(tile.coords):
 					n.neighbouring_mines += 1
 					
 	for tile in tiles:
@@ -63,3 +56,38 @@ func generate_mine_locations() -> Array:
 	for i in  range(0, amount_of_mines):
 		mines.append(Vector2(rng.randi_range(0, size-1), rng.randi_range(0, size-1)))
 	return mines
+
+func get_neighbouring_vectors(center: Vector2) -> Array:
+	return [
+		Vector2(center.x-1, center.y-1),
+		Vector2(center.x, center.y-1),
+		Vector2(center.x, center.y+1),
+		Vector2(center.x+1, center.y-1),
+		Vector2(center.x-1, center.y+1),
+		Vector2(center.x+1, center.y+1),
+		Vector2(center.x-1, center.y),
+		Vector2(center.x+1, center.y),
+	]
+
+func get_neighbouring_tiles(center: Vector2) -> Array:
+	var r = []
+	for v in get_neighbouring_vectors(center):
+		for tile in tiles:
+			if tile.coords == v:
+				r.append(tile)
+	return r
+
+func _on_Tile_transitioned(state_name: String, tile: Tile) -> void:
+	if state_name == "Commited" and tile.should_flood() :
+		flood_empty_spaces(tile)
+
+func flood_empty_spaces(start_tile: Tile):
+	print("flooding")
+	var neighbours = get_neighbouring_tiles(start_tile.coords)
+
+	for n in neighbours:
+		if n.should_flood() and n.get_node("StateMachine").state.name == "Uncommited":
+			print(n.neighbouring_mines)
+			n.commit()
+			flood_empty_spaces(n)
+	

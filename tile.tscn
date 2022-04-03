@@ -46,4 +46,4 @@ script = ExtResource( 7 )
 [connection signal="input_event" from="." to="StateMachine" method="_on_Tile_input_event"]
 [connection signal="mouse_entered" from="." to="StateMachine" method="_on_Tile_mouse_entered"]
 [connection signal="mouse_exited" from="." to="StateMachine" method="_on_Tile_mouse_exited"]
-[connection signal="transitioned" from="StateMachine" to="." method="_on_StateMachine_transitioned"]
+[connection signal="transitioned" from="." to="." method="_on_Tile_transitioned"]

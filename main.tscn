@@ -16,3 +16,5 @@ amount_of_mines = 10
 
 [node name="Tile" parent="GameBoard" instance=ExtResource( 1 )]
 position = Vector2( -196, -26 )
+
+[connection signal="transitioned" from="GameBoard/Tile" to="GameBoard" method="_on_Tile_transitioned"]

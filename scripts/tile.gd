@@ -1,12 +1,13 @@
 class_name Tile
 extends Area2D
 
+# Emitted when transitioning to a new state.
+signal transitioned(state_name, tile)
+
 export(bool) var has_mine = false
 export(int) var neighbouring_mines = 0
 
-var commited: bool = false
 var coords: Vector2
-
 
 var flag_texture: Texture = preload("res://tiles/flag.tres")
 var unpressed_texture: Texture = preload("res://tiles/up.tres")
@@ -38,16 +39,21 @@ var value_map: Dictionary = {
 
 onready var game_board: Node2D = get_parent()
 
+func _on_Tile_transitioned(state_name: String, _tile: Tile) -> void:
+	match state_name:
+		"Pressed":
+			$Sprite.texture = pressed_texture
+		"Commited":
+			$Sprite.texture = value_map[neighbouring_mines]
+			if has_mine:
+				$Sprite.texture = mine_texture
+		"Uncommited":
+			$Sprite.texture = unpressed_texture
+		"Flagged":
+			$Sprite.texture = flag_texture
 
-func _on_StateMachine_transitioned(state_name):
-		match state_name:
-			"Pressed":
-				$Sprite.texture = pressed_texture
-			"Commited":
-				$Sprite.texture = value_map[neighbouring_mines]
-				if has_mine:
-					$Sprite.texture = mine_texture
-			"Uncommited":
-				$Sprite.texture = unpressed_texture
-			"Flagged":
-				$Sprite.texture = flag_texture
+func should_flood() -> bool:
+	return !has_mine
+
+func commit() -> void:
+	$StateMachine.commit()
