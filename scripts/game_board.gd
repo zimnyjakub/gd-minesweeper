@@ -43,7 +43,6 @@ func generate_new_board() -> void:
 
 	for tile in tiles:
 		if tile.has_mine:
-			print(tile.has_mine)
 			for n in tiles:
 				if n.coords in get_neighbouring_vectors(tile.coords):
 					n.neighbouring_mines += 1
@@ -78,16 +77,18 @@ func get_neighbouring_tiles(center: Vector2) -> Array:
 	return r
 
 func _on_Tile_transitioned(state_name: String, tile: Tile) -> void:
-	if state_name == "Commited" and tile.should_flood() :
+	if state_name == "Commited" and !tile.has_mine:
 		flood_empty_spaces(tile)
 
 func flood_empty_spaces(start_tile: Tile):
-	print("flooding")
+	if start_tile.neighbouring_mines > 0:
+		return
+		
 	var neighbours = get_neighbouring_tiles(start_tile.coords)
 
 	for n in neighbours:
-		if n.should_flood() and n.get_node("StateMachine").state.name == "Uncommited":
-			print(n.neighbouring_mines)
-			n.commit()
-			flood_empty_spaces(n)
-	
+		if n.get_node("StateMachine").state.name != "Uncommited":
+			continue
+		
+		n.commit()
+		flood_empty_spaces(n)

@@ -51,9 +51,6 @@ func _on_Tile_transitioned(state_name: String, _tile: Tile) -> void:
 			$Sprite.texture = unpressed_texture
 		"Flagged":
 			$Sprite.texture = flag_texture
-
-func should_flood() -> bool:
-	return !has_mine
-
+			
 func commit() -> void:
 	$StateMachine.commit()
