@@ -1,0 +1,49 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://assets/sprites.png" type="Texture" id=1]
+[ext_resource path="res://scripts/tile.gd" type="Script" id=2]
+[ext_resource path="res://scripts/pressed.gd" type="Script" id=3]
+[ext_resource path="res://scripts/commited.gd" type="Script" id=4]
+[ext_resource path="res://scripts/uncommited.gd" type="Script" id=5]
+[ext_resource path="res://scripts/state_machine.gd" type="Script" id=6]
+[ext_resource path="res://scripts/flagged.gd" type="Script" id=7]
+
+[sub_resource type="AtlasTexture" id=3]
+atlas = ExtResource( 1 )
+region = Rect2( 0, 0, 16, 16 )
+
+[sub_resource type="RectangleShape2D" id=4]
+extents = Vector2( 8, 8 )
+
+[node name="Tile" type="Area2D"]
+scale = Vector2( 3, 3 )
+script = ExtResource( 2 )
+
+[node name="Sprite" type="Sprite" parent="."]
+texture = SubResource( 3 )
+centered = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( 8, 8 )
+shape = SubResource( 4 )
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource( 6 )
+initial_state = NodePath("Uncommited")
+
+[node name="Uncommited" type="Node" parent="StateMachine"]
+script = ExtResource( 5 )
+
+[node name="Commited" type="Node" parent="StateMachine"]
+script = ExtResource( 4 )
+
+[node name="Pressed" type="Node" parent="StateMachine"]
+script = ExtResource( 3 )
+
+[node name="Flagged" type="Node" parent="StateMachine"]
+script = ExtResource( 7 )
+
+[connection signal="input_event" from="." to="StateMachine" method="_on_Tile_input_event"]
+[connection signal="mouse_entered" from="." to="StateMachine" method="_on_Tile_mouse_entered"]
+[connection signal="mouse_exited" from="." to="StateMachine" method="_on_Tile_mouse_exited"]
+[connection signal="transitioned" from="StateMachine" to="." method="_on_StateMachine_transitioned"]
