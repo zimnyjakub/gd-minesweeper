@@ -3,6 +3,7 @@ extends Area2D
 
 # Emitted when transitioning to a new state.
 signal transitioned(state_name, tile)
+signal mine_clicked(tile)
 
 export(bool) var has_mine = false
 export(int) var neighbouring_mines = 0
@@ -13,6 +14,7 @@ var flag_texture: Texture = preload("res://tiles/flag.tres")
 var unpressed_texture: Texture = preload("res://tiles/up.tres")
 var pressed_texture: Texture = preload("res://tiles/down.tres")
 var mine_texture: Texture = preload("res://tiles/mine.tres")
+var mine_down_texture: Texture = preload("res://tiles/mine_down.tres")
 
 var one_texture: Texture = preload("res://tiles/one.tres")
 var two_texture: Texture = preload("res://tiles/two.tres")
@@ -22,7 +24,7 @@ var five_texture: Texture = preload("res://tiles/five.tres")
 var six_texture: Texture = preload("res://tiles/six.tres")
 var seven_texture: Texture = preload("res://tiles/seven.tres")
 var eight_texture: Texture = preload("res://tiles/eight.tres")
-var nine_texture: Texture = preload("res://tiles/nine.tres")\
+var nine_texture: Texture = preload("res://tiles/nine.tres")
 
 var value_map: Dictionary = {
 	0: pressed_texture,
@@ -46,7 +48,8 @@ func _on_Tile_transitioned(state_name: String, _tile: Tile) -> void:
 		"Commited":
 			$Sprite.texture = value_map[neighbouring_mines]
 			if has_mine:
-				$Sprite.texture = mine_texture
+				$Sprite.texture = mine_down_texture
+				emit_signal("mine_clicked", self)
 		"Uncommited":
 			$Sprite.texture = unpressed_texture
 		"Flagged":
@@ -54,3 +57,6 @@ func _on_Tile_transitioned(state_name: String, _tile: Tile) -> void:
 			
 func commit() -> void:
 	$StateMachine.commit()
+
+func reveal_mine() -> void:
+	$Sprite.texture = mine_texture
