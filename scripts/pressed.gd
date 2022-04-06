@@ -10,3 +10,6 @@ func handle_mouse_exited(dragging: bool) -> void:
 
 func commit() -> void:
 	state_machine.transition_to("Commited")
+
+func game_over() -> void:
+	state_machine.transition_to("GameOver")

@@ -20,6 +20,8 @@ var rng = RandomNumberGenerator.new()
 var tiles = []
 var mines = []
 
+var is_game_over = false
+
 func _ready():
 	var tile = tile_resource.instance()
 	tile_size_x = tile.get_node("Sprite").texture.get_width()  * tile.scale.x
@@ -47,7 +49,8 @@ func generate_new_board() -> void:
 					
 	for tile in tiles:
 		add_child(tile)
-		
+	
+
 		
 func place_tile(x: int, y: int, mines: Array) -> Tile:
 	var tile = tile_resource.instance()
@@ -92,7 +95,11 @@ func _on_Tile_transitioned(state_name: String, tile: Tile) -> void:
 		flood_empty_spaces(tile)
 		
 func _on_Tile_mine_clicked(emitted_from: Tile) -> void:
+	is_game_over = true
 	reveal_all_mines(emitted_from)
+	set_game_over_for_tiles()
+	
+	#TODO: game over how to block all tiles
 
 func flood_empty_spaces(start_tile: Tile):
 	if start_tile.neighbouring_mines > 0:
@@ -106,6 +113,10 @@ func flood_empty_spaces(start_tile: Tile):
 		
 		n.commit()
 		flood_empty_spaces(n)
+		
+func set_game_over_for_tiles():
+	for tile in tiles:
+		tile.get_node("StateMachine").game_over()
 
 func reveal_all_mines(current_tile: Tile):
 	for tile in tiles: 

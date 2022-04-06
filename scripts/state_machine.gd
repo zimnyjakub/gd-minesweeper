@@ -61,3 +61,6 @@ func _on_Tile_mouse_exited():
 
 func commit() -> void:
 	state.commit()
+
+func game_over() -> void:
+	state.game_over()
