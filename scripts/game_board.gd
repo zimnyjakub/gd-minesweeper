@@ -1,5 +1,7 @@
 extends Node2D
 
+signal transitioned(state_name, tile)
+
 signal game_started()
 signal game_over()
 signal game_won()
@@ -17,8 +19,8 @@ var dragging: bool = false;
 
 var rng = RandomNumberGenerator.new()
 
-var tiles = []
-var mines = []
+var tiles: Array = []
+var mines: Array = []
 
 var is_game_over = false
 
@@ -32,12 +34,12 @@ func _ready():
 	
 func generate_new_board() -> void:
 	rng.randomize()
-	mines = generate_mine_locations()
+	generate_mine_locations()
 	print_debug("mine locations %s" % PoolStringArray(mines).join(""))
 
 	for x in range(0, size):
 		for y in range(0, size):
-			var tile = place_tile(x,y, mines)
+			var tile = place_tile(x,y)
 			
 			tiles.append(tile)
 
@@ -49,10 +51,11 @@ func generate_new_board() -> void:
 					
 	for tile in tiles:
 		add_child(tile)
+		move_child(tile, 0)
 	
 
 		
-func place_tile(x: int, y: int, mines: Array) -> Tile:
+func place_tile(x: int, y: int) -> Tile:
 	var tile = tile_resource.instance()
 	tile.position.x = x + tile_size_x * x
 	tile.position.y = y + tile_size_y * y
@@ -61,14 +64,14 @@ func place_tile(x: int, y: int, mines: Array) -> Tile:
 	tile.coords = Vector2(x,y)
 	tile.connect("transitioned", self, "_on_Tile_transitioned")
 	tile.connect("mine_clicked", self, "_on_Tile_mine_clicked")
+	tile.connect("transitioned", get_node("../CanvasLayer/RemainingMines"), "_on_Tile_transitioned")
 	
 	return tile
 
-func generate_mine_locations() -> Array:
-	var mines = []
-	for i in  range(0, amount_of_mines):
+func generate_mine_locations() -> void:
+	mines = []
+	for _i in range(0, amount_of_mines):
 		mines.append(Vector2(rng.randi_range(0, size-1), rng.randi_range(0, size-1)))
-	return mines
 
 func get_neighbouring_vectors(center: Vector2) -> Array:
 	return [
@@ -90,7 +93,7 @@ func get_neighbouring_tiles(center: Vector2) -> Array:
 				r.append(tile)
 	return r
 
-func _on_Tile_transitioned(state_name: String, tile: Tile) -> void:
+func _on_Tile_transitioned(previous_state: String, state_name: String, tile: Tile) -> void:
 	if state_name == "Commited" and !tile.has_mine:
 		flood_empty_spaces(tile)
 		
@@ -98,6 +101,7 @@ func _on_Tile_mine_clicked(emitted_from: Tile) -> void:
 	is_game_over = true
 	reveal_all_mines(emitted_from)
 	set_game_over_for_tiles()
+	emit_signal("game_over")
 	
 	#TODO: game over how to block all tiles
 

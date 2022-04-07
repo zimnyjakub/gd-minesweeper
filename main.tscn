@@ -1,11 +1,17 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://tile.tscn" type="PackedScene" id=1]
 [ext_resource path="res://scripts/game_board.gd" type="Script" id=2]
 [ext_resource path="res://tiles/game_ongoing.tres" type="Texture" id=3]
+[ext_resource path="res://assets/ka.tres" type="DynamicFont" id=4]
+[ext_resource path="res://scripts/mines_label.gd" type="Script" id=5]
+[ext_resource path="res://scripts/game_over_popup.gd" type="Script" id=6]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 8, 8 )
+
+[sub_resource type="StyleBoxTexture" id=2]
+region_rect = Rect2( 20, 20, 30, 30 )
 
 [node name="Node2D" type="Node2D"]
 
@@ -26,3 +32,87 @@ texture = ExtResource( 3 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource( 1 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="BoardRef" type="ReferenceRect" parent="CanvasLayer"]
+visible = false
+margin_left = 276.0
+margin_top = 146.0
+margin_right = 716.0
+margin_bottom = 586.0
+border_width = 4.1
+
+[node name="RemainingMines" type="Label" parent="CanvasLayer"]
+margin_left = 32.0
+margin_top = 96.0
+margin_right = 300.0
+margin_bottom = 121.0
+custom_colors/font_color = Color( 0.0588235, 0.219608, 0.0588235, 1 )
+custom_fonts/font = ExtResource( 4 )
+text = "Remaining mines 10"
+script = ExtResource( 5 )
+
+[node name="GameOverPopup" type="Popup" parent="CanvasLayer"]
+visible = true
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -150.0
+margin_top = -75.0
+margin_right = 150.0
+margin_bottom = 75.0
+popup_exclusive = true
+script = ExtResource( 6 )
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/GameOverPopup"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.545098, 0.67451, 0.0588235, 1 )
+
+[node name="PopupBorder" type="ReferenceRect" parent="CanvasLayer/GameOverPopup"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+border_color = Color( 0.188235, 0.384314, 0.188235, 1 )
+border_width = 4.0
+editor_only = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GameOverPopup"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -83.0
+margin_top = -48.5
+margin_right = 83.0
+margin_bottom = 48.5
+custom_constants/separation = 16
+alignment = 1
+
+[node name="GameOverLabel" type="Label" parent="CanvasLayer/GameOverPopup/VBoxContainer"]
+margin_top = 3.0
+margin_right = 166.0
+margin_bottom = 54.0
+custom_colors/font_color = Color( 0.0588235, 0.219608, 0.0588235, 1 )
+custom_fonts/font = ExtResource( 4 )
+text = "Game Over 
+womp womp"
+align = 1
+valign = 1
+
+[node name="Button" type="Button" parent="CanvasLayer/GameOverPopup/VBoxContainer"]
+margin_top = 70.0
+margin_right = 166.0
+margin_bottom = 94.0
+focus_mode = 0
+custom_colors/font_color_focus = Color( 0.0588235, 0.219608, 0.0588235, 1 )
+custom_colors/font_color = Color( 0.0588235, 0.219608, 0.0588235, 1 )
+custom_colors/font_color_hover = Color( 0.188235, 0.384314, 0.188235, 1 )
+custom_colors/font_color_pressed = Color( 0.188235, 0.384314, 0.188235, 1 )
+custom_fonts/font = ExtResource( 4 )
+custom_styles/normal = SubResource( 2 )
+text = "Try again?"
+flat = true
+
+[connection signal="game_over" from="GameBoard" to="CanvasLayer/GameOverPopup" method="_on_GameBoard_game_over"]

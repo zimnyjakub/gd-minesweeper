@@ -1,8 +1,7 @@
 class_name Tile
 extends Area2D
 
-# Emitted when transitioning to a new state.
-signal transitioned(state_name, tile)
+signal transitioned(previous_state, state_name, tile)
 signal mine_clicked(tile)
 
 export(bool) var has_mine = false
@@ -41,7 +40,7 @@ var value_map: Dictionary = {
 
 onready var game_board: Node2D = get_parent()
 
-func _on_Tile_transitioned(state_name: String, _tile: Tile) -> void:
+func _on_Tile_transitioned(previous_state: String, state_name: String, _tile: Tile) -> void:
 	match state_name:
 		"Pressed":
 			$Sprite.texture = pressed_texture

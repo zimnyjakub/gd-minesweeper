@@ -14,10 +14,10 @@ func _ready() -> void:
 func handle_input_event(_event: InputEvent) -> void:
 	pass
 
-func handle_mouse_entered(dragging: bool) -> void:
+func handle_mouse_entered(_dragging: bool) -> void:
 	pass
 
-func handle_mouse_exited(dragging: bool) -> void:
+func handle_mouse_exited(_dragging: bool) -> void:
 	pass
 	
 func commit() -> void:
