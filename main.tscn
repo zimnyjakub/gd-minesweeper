@@ -105,7 +105,7 @@ womp womp"
 align = 1
 valign = 1
 
-[node name="Button" type="Button" parent="CanvasLayer/GameOverPopup/VBoxContainer"]
+[node name="TryAgainBtn" type="Button" parent="CanvasLayer/GameOverPopup/VBoxContainer"]
 margin_top = 70.0
 margin_right = 166.0
 margin_bottom = 94.0
@@ -119,7 +119,7 @@ custom_styles/normal = SubResource( 2 )
 text = "Try again?"
 flat = true
 
-[node name="NinePatchRect" type="NinePatchRect" parent="CanvasLayer/GameOverPopup/VBoxContainer/Button"]
+[node name="NinePatchRect" type="NinePatchRect" parent="CanvasLayer/GameOverPopup/VBoxContainer/TryAgainBtn"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = -5.0
@@ -133,3 +133,4 @@ patch_margin_right = 16
 patch_margin_bottom = 16
 
 [connection signal="game_over" from="GameBoard" to="CanvasLayer/GameOverPopup" method="_on_GameBoard_game_over"]
+[connection signal="button_up" from="CanvasLayer/GameOverPopup/VBoxContainer/TryAgainBtn" to="GameBoard" method="_on_TryAgainBtn_button_up"]

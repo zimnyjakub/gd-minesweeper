@@ -130,3 +130,12 @@ func reveal_all_mines(current_tile: Tile):
 			
 		if tile.has_mine:
 			tile.reveal_mine()
+
+
+func _on_TryAgainBtn_button_up() -> void:
+	for tile in tiles:
+		tile.queue_free()
+	tiles = []
+		
+	get_node("../CanvasLayer/GameOverPopup").hide()
+	generate_new_board()
