@@ -22,7 +22,9 @@ var rng = RandomNumberGenerator.new()
 var tiles: Array = []
 var mines: Array = []
 
-var is_game_over = false
+var uncommited_tiles: int = 0 
+
+var game_over: bool = false
 
 func _ready():
 	var tile = tile_resource.instance()
@@ -31,6 +33,10 @@ func _ready():
 	tile.queue_free()
 	generate_new_board()
 	
+func _physics_process(delta: float) -> void:
+	count_uncommited_tiles()
+	
+
 	
 func generate_new_board() -> void:
 	rng.randomize()
@@ -93,17 +99,22 @@ func get_neighbouring_tiles(center: Vector2) -> Array:
 				r.append(tile)
 	return r
 
-func _on_Tile_transitioned(previous_state: String, state_name: String, tile: Tile) -> void:
+func _on_Tile_transitioned(previous_state: String, state_name: String, tile: Tile) -> void:	
 	if state_name == "Commited" and !tile.has_mine:
 		flood_empty_spaces(tile)
 		
+	# todo - figure out why game won is triggering if game is already lost!
+	if uncommited_tiles == amount_of_mines && not game_over:
+		print("game won")
+		emit_signal("game_won")
+	
 func _on_Tile_mine_clicked(emitted_from: Tile) -> void:
-	is_game_over = true
+	game_over = true
+	
 	reveal_all_mines(emitted_from)
 	set_game_over_for_tiles()
 	emit_signal("game_over")
-	
-	#TODO: game over how to block all tiles
+
 
 func flood_empty_spaces(start_tile: Tile):
 	if start_tile.neighbouring_mines > 0:
@@ -138,4 +149,19 @@ func _on_TryAgainBtn_button_up() -> void:
 	tiles = []
 		
 	get_node("../CanvasLayer/GameOverPopup").hide()
+	get_node("../CanvasLayer/GameWonPopup").hide()
 	generate_new_board()
+	game_over = false
+
+	
+
+func count_uncommited_tiles() -> void:
+	if game_over:
+		return 
+		
+	var u = 0
+	for tile in tiles:
+		if tile.get_node("StateMachine").state.name == "Uncommited" \
+		or tile.get_node("StateMachine").state.name == "Flagged":
+			u += 1
+	uncommited_tiles = u
