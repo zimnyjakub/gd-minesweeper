@@ -59,6 +59,7 @@ func generate_new_board() -> void:
 		add_child(tile)
 		move_child(tile, 0)
 	
+	get_node("../CanvasLayer/RemainingMines")._ready()	
 
 		
 func place_tile(x: int, y: int) -> Tile:
