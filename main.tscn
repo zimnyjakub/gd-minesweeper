@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://scripts/uncovered_tiles_label.gd" type="Script" id=1]
 [ext_resource path="res://scripts/game_board.gd" type="Script" id=2]
@@ -9,6 +9,8 @@
 [ext_resource path="res://nine_rect_bg.tres" type="Texture" id=7]
 [ext_resource path="res://assets/ka_small.tres" type="DynamicFont" id=8]
 [ext_resource path="res://scripts/game_won_popup.gd" type="Script" id=9]
+[ext_resource path="res://scripts/telemetry_send_event.gd" type="Script" id=10]
+[ext_resource path="res://scripts/telemetry_game_ready.gd" type="Script" id=11]
 
 [sub_resource type="StyleBoxTexture" id=2]
 region_rect = Rect2( 20, 20, 30, 30 )
@@ -194,6 +196,7 @@ patch_margin_right = 4
 patch_margin_bottom = 4
 
 [node name="DebugInfo" type="VBoxContainer" parent="CanvasLayer"]
+visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
@@ -232,7 +235,17 @@ custom_colors/font_color = Color( 0.0588235, 0.219608, 0.0588235, 1 )
 custom_fonts/font = SubResource( 3 )
 text = "M I N E S W E E P E R"
 
+[node name="Telemetry" type="Node" parent="."]
+
+[node name="GameReady" type="HTTPRequest" parent="Telemetry"]
+script = ExtResource( 11 )
+
+[node name="TelemetryEvent" type="HTTPRequest" parent="Telemetry"]
+script = ExtResource( 10 )
+
 [connection signal="game_over" from="GameBoard" to="CanvasLayer/GameOverPopup" method="_on_GameBoard_game_over"]
+[connection signal="game_over" from="GameBoard" to="Telemetry/TelemetryEvent" method="_on_GameBoard_game_over"]
 [connection signal="game_won" from="GameBoard" to="CanvasLayer/GameWonPopup" method="_on_GameBoard_game_won"]
+[connection signal="game_won" from="GameBoard" to="Telemetry/TelemetryEvent" method="_on_GameBoard_game_won"]
 [connection signal="button_up" from="CanvasLayer/GameOverPopup/VBoxContainer/TryAgainBtn" to="GameBoard" method="_on_TryAgainBtn_button_up"]
 [connection signal="button_up" from="CanvasLayer/GameWonPopup/VBoxContainer/TryAgainBtn" to="GameBoard" method="_on_TryAgainBtn_button_up"]
