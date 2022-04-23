@@ -15,7 +15,8 @@ enum TelemetryEventType{
 }
 
 func _send_telemetry_event(event_type:int) -> void:
-	var addr = "https://games.coldbytes.com/games/70eb469a-73b3-4a19-b497-d6fc17d3a4ed"
+#	var addr = "https://games.coldbytes.com/games/70eb469a-73b3-4a19-b497-d6fc17d3a4ed"
+	var addr = "https://coldgames.herokuapp.com/games/70eb469a-73b3-4a19-b497-d6fc17d3a4ed"
 	var auth_login = "kaltmann"
 	var auth_pwd = "bfgs97gDqiYWQT"
 	
